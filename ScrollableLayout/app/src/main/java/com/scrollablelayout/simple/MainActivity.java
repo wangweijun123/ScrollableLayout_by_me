@@ -26,17 +26,17 @@ import in.srain.cube.views.ptr.PtrDefaultHandler;
 import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrHandler;
 
+import static com.scrollablelayout.simple.R.id.tv_signature;
+
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, PtrHandler, View.OnClickListener {
 
     private PtrClassicFrameLayout pfl_root;
     private ScrollableLayout sl_root;
     private ViewPager vp_scroll;
+    private ViewPager viewPagerHeader;
     private TextView tv_title;
     private TextView tv_right;
     private ImageView iv_spit;
-    private TextView tv_name;
-    private TextView tv_signature;
-    private ImageView iv_avatar;
     private RelativeLayout ly_page1;
     private TextView tv_page1;
     private RelativeLayout ly_page2;
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private float avatarTop;
     private float maxScrollHeight;
     private final List<BaseFragment> fragmentList = new ArrayList<>();
-
+    private final List<Fragment> fragmentList2 = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -61,12 +61,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         pfl_root = (PtrClassicFrameLayout) findViewById(R.id.pfl_root);
         sl_root = (ScrollableLayout) findViewById(R.id.sl_root);
         vp_scroll = (ViewPager) findViewById(R.id.vp_scroll);
+        viewPagerHeader = (ViewPager) findViewById(R.id.viewPagerHeader);
         tv_title = (TextView) findViewById(R.id.tv_title);
         tv_right = (TextView) findViewById(R.id.tv_right);
         iv_spit = (ImageView) findViewById(R.id.iv_spit);
-        tv_name = (TextView) findViewById(R.id.tv_name);
-        tv_signature = (TextView) findViewById(R.id.tv_signature);
-        iv_avatar = (ImageView) findViewById(R.id.iv_avatar);
 
         ly_page1 = (RelativeLayout) findViewById(R.id.ly_page1);
         tv_page1 = (TextView) findViewById(R.id.tv_page1);
@@ -84,11 +82,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     maxScrollHeight = hearderMaxHeight + titleMaxScrollHeight;
                 }
                 if (hearderMaxHeight == 0) {
-                    hearderMaxHeight = tv_name.getTop();
                     maxScrollHeight = hearderMaxHeight + titleMaxScrollHeight;
                 }
                 if (avatarTop == 0) {
-                    avatarTop = iv_avatar.getTop();
                 }
 
                 int alpha = 0;
@@ -114,12 +110,16 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         CommonFragementPagerAdapter commonFragementPagerAdapter = new CommonFragementPagerAdapter(getSupportFragmentManager());
         fragmentList.add(RecyclerViewSimpleFragment.newInstance());
         fragmentList.add(RecyclerViewGridSimpleFragment.newInstance());
+
+        fragmentList2.add(SimpleFragment.newInstance());
+        fragmentList2.add(SimpleFragment.newInstance());
+
         vp_scroll.setAdapter(commonFragementPagerAdapter);
+        viewPagerHeader.setAdapter(new CommonFragementPagerAdapter2(getSupportFragmentManager()));
         vp_scroll.addOnPageChangeListener(this);
         sl_root.getHelper().setCurrentScrollableContainer(fragmentList.get(0));
 
         tv_right.setOnClickListener(this);
-        tv_signature.setOnClickListener(this);
         ly_page1.setOnClickListener(this);
         ly_page2.setOnClickListener(this);
     }
@@ -170,11 +170,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.tv_signature:
-                Uri uri = Uri.parse(tv_signature.getText().toString());
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(intent);
-                break;
             case R.id.tv_right:
                 startActivity(new Intent(MainActivity.this, TestActivity.class));
                 break;
@@ -201,6 +196,23 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         @Override
         public int getCount() {
             return fragmentList == null ? 0 : fragmentList.size();
+        }
+    }
+
+    public class CommonFragementPagerAdapter2 extends FragmentPagerAdapter {
+
+        public CommonFragementPagerAdapter2(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return getCount() > position ? fragmentList2.get(position) : null;
+        }
+
+        @Override
+        public int getCount() {
+            return fragmentList2 == null ? 0 : fragmentList2.size();
         }
     }
 }
